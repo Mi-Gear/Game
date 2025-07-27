@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class SteamLobby : MonoBehaviour
 {
-    [SerializeField] private NetworkManager netManager;
+    [SerializeField] private CustomNetworkManager netManager;
     private const string HostAddressKey = "HostAddressKey";
-    protected Callback<LobbyCreated_t> lobbyCreated;
-    protected Callback<GameLobbyJoinRequested_t> joinRequest;
-    protected Callback<LobbyEnter_t> enterLobby;
+    public Callback<LobbyCreated_t> lobbyCreated;
+    public Callback<GameLobbyJoinRequested_t> joinRequest;
+    public Callback<LobbyEnter_t> enterLobby;
     void Start()
     {
-        netManager = GetComponent<NetworkManager>();
+        netManager = GetComponent<CustomNetworkManager>();
         if (!SteamManager.Initialized)  return; 
 
         lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
@@ -27,8 +27,8 @@ public class SteamLobby : MonoBehaviour
     private void OnLobbyCreated(LobbyCreated_t callback)
     {
         if (callback.m_eResult != EResult.k_EResultOK)  return;
-
         netManager.StartHost();
+        
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey, SteamUser.GetSteamID().ToString());
         NetworkManager.singleton.ServerChangeScene("Lobby");
 
@@ -40,7 +40,11 @@ public class SteamLobby : MonoBehaviour
 
     private void OnEnterLobby(LobbyEnter_t callback)
     {
-        if (NetworkServer.active) return;
+        if (NetworkServer.active)
+        {
+            netManager.lobbyID = callback.m_ulSteamIDLobby;
+            return;
+        }
         string HostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey);
         netManager.networkAddress = HostAddress;
         netManager.StartClient();

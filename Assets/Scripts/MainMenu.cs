@@ -14,7 +14,7 @@ public class MainMenu : MonoBehaviour
     public void CreateLobby()
     {
         steamLobby.HostLobby();
-            
-        
+
+
     }
 }

@@ -700,6 +700,7 @@ MonoBehaviour:
   syncInterval: 0
   list:
   - {fileID: 650997597354880998, guid: ef065f044187f994cbe7fa72e1d9e084, type: 3}
+  list1: []
 --- !u!114 &1938513191
 MonoBehaviour:
   m_ObjectHideFlags: 0
